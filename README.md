@@ -2,7 +2,7 @@
 
 This repository is organized to match the project requirements.
 
-## Assignment Coverage
+## Project Coverage
 
 ### Part 1 - GitHub Repo
 This project is structured and documented for submission as a complete repository.
