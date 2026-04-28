@@ -113,7 +113,7 @@ def predict_risk(age, systolic_bp, diastolic, bs, body_temp,
         
         <div style="font-size: 13px; color: #374151; font-style: italic; background: #f9fafb; padding: 12px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
             <p style="margin: 0; color: #374151;">
-                💡 <b>Disclaimer:</b> This assessment is for educational purposes only 
+                <b>Disclaimer:</b> This assessment is for educational purposes only 
                 and should not replace professional medical consultation. 
                 Please consult with a healthcare provider for accurate diagnosis.
             </p>
@@ -142,7 +142,7 @@ custom_css = """
 with gr.Blocks(theme=gr.themes.Soft(), css=custom_css) as demo:
     # Header
     gr.Markdown("""
-    # 🤰 Maternal Health Risk Assessment
+    # Maternal Health Risk Assessment
     
     Enter patient vitals and health information to receive a risk assessment.
     This tool uses machine learning models trained on maternal health data.
