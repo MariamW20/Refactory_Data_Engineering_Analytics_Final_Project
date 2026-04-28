@@ -52,7 +52,7 @@ pip install -r requirements.txt
 3. Run the dashboard demo:
 
 ```bash
-python 04_dashboard.py
+python dashboard.py
 ```
 
 ## Notes
