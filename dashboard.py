@@ -1,6 +1,7 @@
 import numpy as np
 import gradio as gr
 import joblib
+import os
 from pathlib import Path
 
 # Check for required model files
@@ -29,23 +30,26 @@ def predict_risk(age, systolic_bp, diastolic, bs, body_temp,
                      mental_health, heart_rate]], dtype=float)
 
     inp_sc = scaler.transform(inp)
+    # Use model prediction (binary) to present a clear High/Low label
     prob_rf = rf.predict_proba(inp_sc)[0][1]
-    
-    if prob_rf >= 0.65:
-        risk_level = "HIGH RISK"
-        risk_note = "The model is clearly above the high-risk threshold."
-        color = "#b42318"
-        banner_bg = "#fef3f2"
-    elif prob_rf <= 0.35:
-        risk_level = "LOW RISK"
-        risk_note = "The model is clearly below the high-risk threshold."
-        color = "#027a48"
-        banner_bg = "#ecfdf3"
+    pred = int(rf.predict(inp_sc)[0])
+
+    if pred == 1:
+     risk_level = "High"
+     risk_note = "The model suggests a high risk of complications."
+     color = "#b42318"
+     banner_bg = "#fef3f2"
     else:
-        risk_level = "BORDERLINE"
-        risk_note = "The model is near the decision threshold, so interpret this cautiously."
-        color = "#b26a00"
-        banner_bg = "#fff7ed"
+         risk_level = "Low"
+         risk_note = "The model suggests a low risk of complications."
+         color = "#027a48"
+         banner_bg = "#ecfdf3"
+
+    # Confidence warning, without creating a third class
+    confidence = max(prob_rf, 1 - prob_rf)
+
+    if confidence < 0.65:
+     risk_note += " However, the confidence is low, indicating uncertainty. Clinical evaluation is recommended."
     
     # Build comprehensive output
     output = f"""
@@ -58,8 +62,11 @@ def predict_risk(age, systolic_bp, diastolic, bs, body_temp,
                 {risk_note}
             </p>
         </div>
-        <p style="font-size: 18px; color: #111827; margin: 10px 0; font-weight: 600;">
-            Risk Score: {prob_rf*100:.1f}%
+            <p style="font-size: 18px; color: #111827; margin: 10px 0; font-weight: 700;">
+            Prediction: {risk_level}
+        </p>
+            <p style="font-size: 14px; color: #374151; margin: 4px 0 0 0;">
+            (Confidence: {prob_rf*100:.1f}%)
         </p>
         
         <hr style="border: none; border-top: 1px solid #d1d5db; margin: 16px 0;">
@@ -109,15 +116,12 @@ def predict_risk(age, systolic_bp, diastolic, bs, body_temp,
     output += """
         </div>
         
-        <hr style="border: none; border-top: 1px solid #d1d5db; margin: 16px 0;">
-        
-        <div style="font-size: 13px; color: #374151; font-style: italic; background: #f9fafb; padding: 12px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
-            <p style="margin: 0; color: #374151;">
-                <b>Disclaimer:</b> This assessment is for educational purposes only 
-                and should not replace professional medical consultation. 
-                Please consult with a healthcare provider for accurate diagnosis.
-            </p>
-        </div>
+        <div style="margin-top:12px; padding: 14px; border-radius: 10px; background: #fef3f2; border: 1px solid #fca5a5;">
+    <strong style="color: #b42318; font-size: 15px;">Medical Disclaimer !</strong>
+    <p style="margin: 6px 0 0 0; font-size: 14px; color: #111827;">
+        This tool provides general health insights and does not replace professional medical advice. Consult a qualified healthcare provider.
+    </p>
+</div>
     </div>
     """
     
@@ -139,13 +143,13 @@ custom_css = """
 }
 """
 
-with gr.Blocks(theme=gr.themes.Soft(), css=custom_css) as demo:
+with gr.Blocks() as demo:
     # Header
     gr.Markdown("""
     # Maternal Health Risk Assessment
     
     Enter patient vitals and health information to receive a risk assessment.
-    This tool uses machine learning models trained on maternal health data.
+    This tool uses a machine learning model trained on maternal health data.
     
     ---
     """)
@@ -230,12 +234,17 @@ with gr.Blocks(theme=gr.themes.Soft(), css=custom_css) as demo:
     
     **Model:** Random Forest Classifier trained on maternal health data
     
-    **Accuracy:** ~85% on test data | **Key Factors:** Age, Blood Pressure, Blood Sugar, BMI
+    **Accuracy:** 0.991561 on test data | **Key Factors:** Age, Blood Pressure, Blood Sugar, BMI
     
-    **Important:** This tool is mostly for educational demonstration purposes. 
-    Medical decisions should always involve qualified healthcare professionals.
+    **Important:** This tool provides preliminary insights and does not replace professional medical judgment. Consult a qualified healthcare provider for decisions.
     """)
 
 
 if __name__ == "__main__":
-    demo.launch(share=False)
+    demo.launch(
+    theme=gr.themes.Soft(),
+    css=custom_css,
+    share=False,
+    server_name=os.getenv("GRADIO_SERVER_NAME", "127.0.0.1"),
+    server_port=7861
+)

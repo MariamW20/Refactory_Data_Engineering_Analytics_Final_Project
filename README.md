@@ -1,3 +1,10 @@
+---
+title: Maternal Health Risk Prediction
+sdk: gradio
+app_file: app.py
+python_version: 3.11
+---
+
 # Maternal Health Risk Prediction Project
 
 This repository is organized to match the project requirements.
@@ -76,10 +83,34 @@ pip install jupyter ipykernel
 ```bash
 python dashboard.py
 ```
-Open the Gradio interface in your browser (typically `http://localhost:7860`)
+Open the Gradio interface in your browser (typically `http://localhost:7861`)
+
+## Deployment
+
+This project is deployable as a Gradio app.
+
+### Hugging Face Spaces
+1. Create a new **Gradio** Space.
+2. Upload these files to the Space:
+   - `app.py`
+   - `dashboard.py`
+   - `random_forest_model.pkl`
+   - `scaler.pkl`
+   - `requirements.txt`
+3. Keep the dataset and notebook in the repo if you want the full project history, but they are not required for the live demo.
+4. The Space will start from `app.py` automatically.
+
+### Local host / server deployment
+Run:
+```bash
+python app.py
+```
+
+The app listens on `0.0.0.0:7861`, which is suitable for containerized or hosted environments.
+
 
 ## Notes
 
 - Dashboard validates model files exist before launching
 - All models are trained during notebook execution
-- Educational tool designed for demonstration purposes
+
