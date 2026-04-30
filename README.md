@@ -83,7 +83,7 @@ pip install jupyter ipykernel
 ```bash
 python dashboard.py
 ```
-Open the Gradio interface in your browser (typically `http://localhost:7861`)
+Open the Gradio interface in your browser (typically `http://localhost:7860`)
 
 ## Deployment
 
@@ -106,7 +106,7 @@ Run:
 python app.py
 ```
 
-The app listens on `0.0.0.0:7861`, which is suitable for containerized or hosted environments.
+The app listens on `0.0.0.0:7860`, which is suitable for containerized or hosted environments.
 
 
 ## Notes
